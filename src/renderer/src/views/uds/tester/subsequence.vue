@@ -163,6 +163,21 @@
               </el-tooltip>
               <el-tooltip
                 effect="light"
+                :content="i18next.t('uds.tester.subsequence.tooltips.copyService')"
+                placement="bottom"
+              >
+                <el-button
+                  type="primary"
+                  link
+                  size="small"
+                  :disabled="actionRow == -1 || props.disabled"
+                  @click="copyService"
+                >
+                  <Icon :icon="copyIcon" class="icon" />
+                </el-button>
+              </el-tooltip>
+              <el-tooltip
+                effect="light"
                 :content="i18next.t('uds.tester.subsequence.tooltips.removeService')"
                 placement="bottom"
               >
@@ -187,12 +202,14 @@
 <script lang="tsx" setup>
 import { v4 } from 'uuid'
 import { Sequence, SequenceItem, ServiceItem, UdsAddress, getUdsAddrName } from 'nodeCan/uds'
-import { onMounted, ref, computed, onUnmounted, watch } from 'vue'
+import { onMounted, ref, computed, onUnmounted, watch, nextTick } from 'vue'
 import { Icon } from '@iconify/vue'
 import { VxeGridProps } from 'vxe-table'
 import { VxeGrid } from 'vxe-table'
 import circlePlusFilled from '@iconify/icons-material-symbols/add-circle-outline'
+import copyIcon from '@iconify/icons-material-symbols/content-copy'
 import removeIcon from '@iconify/icons-material-symbols/remove-rounded'
+import { cloneDeep } from 'lodash'
 import { useDataStore } from '@r/stores/data'
 import i18next from 'i18next'
 
@@ -382,6 +399,28 @@ function addService() {
     msg: i18next.t('uds.tester.subsequence.status.notStart')
   })
   xGrid.value?.clearCurrentRow()
+}
+
+function copyService() {
+  if (actionRow.value < 0 || props.disabled) {
+    return
+  }
+  const row = data.value.services[actionRow.value]
+  if (!row) {
+    return
+  }
+  const copy = cloneDeep(row)
+  copy.uuid = v4()
+  const insertAt = actionRow.value + 1
+  data.value.services.splice(insertAt, 0, copy)
+  excuseResults.value.splice(insertAt, 0, {
+    status: 'notStart',
+    msg: i18next.t('uds.tester.subsequence.status.notStart')
+  })
+  actionRow.value = insertAt
+  nextTick(() => {
+    xGrid.value?.setCurrentRow(data.value.services[insertAt])
+  })
 }
 
 function deleteService() {

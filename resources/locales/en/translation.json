@@ -1801,6 +1801,7 @@
       "sequence": {
         "tooltips": {
           "addSequence": "Add a new sequence",
+          "copySequence": "Duplicate the current sequence",
           "testerPresent": "Tester Present Control",
           "runSequence": "Run chosen sequence",
           "stopSequence": "Stop chosen sequence",
@@ -1820,7 +1821,8 @@
         },
         "messages": {
           "onlyDuringMeasurement": "Sequence can only be start during a running measurement"
-        }
+        },
+        "copyNameTemplate": "{{name}} (copy)"
       },
       "service": {
         "labels": {
@@ -1879,6 +1881,7 @@
         },
         "tooltips": {
           "addService": "Add a new service",
+          "copyService": "Duplicate selected service row",
           "removeService": "Remove"
         },
         "columns": {
