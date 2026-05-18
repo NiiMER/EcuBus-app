@@ -1447,7 +1447,7 @@ function createCanMessageWrapper(msg: CanMessage) {
     }
   })
 }
-function createLinMessageWrapper(msg: LinMsg) {
+function createLinMessageWrapper(msg: LinMsg): LinMsg {
   // Cache database and message definition to avoid repeated lookups
   const db = msg.database ? global.dataSet.database.lin[msg.database] : undefined
   const msgDef = msg.name ? db?.frames[msg.name] : undefined
@@ -1455,15 +1455,16 @@ function createLinMessageWrapper(msg: LinMsg) {
   if (db && msgDef) {
     writeLinMessageData(msgDef, msg.data, db)
     msg.signals = {}
-    for (const signal of Object.values(msgDef.signals)) {
-      msg.signals[signal.name] = new Proxy(signal, {
-        set(target, prop: keyof CanSignal, value: any) {
+    for (const xsignal of Object.values(msgDef.signals)) {
+      const signal = db.signals[xsignal.name]
+      msg.signals[signal.signalName] = new Proxy(signal, {
+        set(target, prop: keyof LinSignal, value: any) {
           const ret = Reflect.set(target, prop, value)
           if (prop === 'value') {
-            updateLinSignalVal(db, signal.name, value)
+            updateLinSignalVal(db, signal.signalName, value)
           }
           if (prop === 'physValue') {
-            updateLinSignalVal(db, signal.name, String(value))
+            updateLinSignalVal(db, signal.signalName, String(value))
           }
           return ret
         }
@@ -1472,13 +1473,13 @@ function createLinMessageWrapper(msg: LinMsg) {
   }
 
   return new Proxy(msg, {
-    get(target, prop: keyof CanMessage) {
+    get(target, prop: keyof LinMsg) {
       if (prop === 'data' && msgDef && db) {
         return getFrameData(db, msgDef)
       }
       return Reflect.get(target, prop)
     },
-    set(target, prop: keyof CanMessage, value: any) {
+    set(target, prop: keyof LinMsg, value: any) {
       if (prop === 'data' && db && msgDef) {
         writeLinMessageData(msgDef, value, db)
       }
@@ -2229,6 +2230,9 @@ export class UtilClass {
 
     if (msg.signals) {
       const dbName = global.dataSet.database.lin[msg.database!].name
+      if (dbName && msg.name) {
+        await this.event.emit(`lin.${dbName}.${msg.name}` as any, msg)
+      }
       //emit signal
       for (const signal of Object.values(msg.signals as Record<string, LinSignal>)) {
         await this.event.emit(`${dbName}.${signal.signalName}` as any, signal)
