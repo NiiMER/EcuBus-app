@@ -141,7 +141,7 @@
     "@electron-toolkit/eslint-config": "^1.0.2",
     "@electron-toolkit/eslint-config-ts": "^1.0.1",
     "@electron-toolkit/tsconfig": "^1.0.1",
-    "@electron/rebuild": "^4.0.3",
+    "@electron/rebuild": "^4.0.4",
     "@iconify/icons-ep": "^1.2.12",
     "@iconify/icons-material-symbols": "^1.2.58",
     "@iconify/icons-ph": "^1.2.5",
@@ -169,7 +169,7 @@
     "lint-staged": "^15.4.3",
     "mermaid": "^11.12.3",
     "node-addon-api": "^8.2.2",
-    "node-gyp": "^11.5.0",
+    "node-gyp": "^12.3.0",
     "node-loader": "^2.1.0",
     "prettier": "^3.5.2",
     "rollup": "^4.59.0",
@@ -199,6 +199,7 @@
     "esbuild": "^0.25.0",
     "axios": "^1.8.2",
     "@babel/runtime": "^7.26.10",
-    "tar-fs": "2.1.4"
+    "tar-fs": "2.1.4",
+    "node-gyp": "^12.3.0"
   }
 }
